@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 
 namespace GloomyStateMachine
 {
-    class StateMachine
+    class StateMachine <T>
     {
-        Dictionary<Enum, MachineState> stateActions;
-        List<StateHistoryEntry> machineHistory;
-        StateHistoryEntry currentStateEntry;
+        Dictionary<T, MachineState> stateActions;
+        List<StateHistoryEntry<T>> machineHistory;
+        StateHistoryEntry<T> currentStateEntry;
 
-        Enum currentState;
+        T currentState;
 
         int maxHistorySize = 8;
 
         private StateMachine()
         {
-            stateActions = new Dictionary<Enum, MachineState>();
-            machineHistory = new List<StateHistoryEntry>();
+            stateActions = new Dictionary<T, MachineState>();
+            machineHistory = new List<StateHistoryEntry<T>>();
         }
 
-        public static StateMachine Create()
+        public static StateMachine<T> Create()
         {
-            return new StateMachine();
+            return new StateMachine<T>();
         }
 
         /// <summary>
@@ -36,13 +36,13 @@ namespace GloomyStateMachine
         /// <param name="onExit">Function to execute upon ex</param>
         /// <returns></returns>
         // 
-        public StateMachine AddState(Enum stateId, Action onExecute, Action onEnter, Action onExit)
+        public StateMachine<T> AddState(T stateId, Action onExecute, Action onEnter, Action onExit)
         {
             // Set default state if its the first state added
             if (stateActions.Count == 0)
             {
                 currentState = stateId;
-                currentStateEntry = new StateHistoryEntry(currentState);
+                currentStateEntry = new StateHistoryEntry<T>(currentState);
             }
 
             MachineState newState = new MachineState(onExecute, onEnter, onExit);
@@ -58,7 +58,7 @@ namespace GloomyStateMachine
         /// <param name="stateId">The state identifier (an Enum)</param>
         /// <param name="onExecute">Function to call every iteration if this state</param>
         /// <returns>This state machine</returns>
-        public StateMachine AddState(Enum stateId, Action onExecute)
+        public StateMachine<T> AddState(T stateId, Action onExecute)
         {
             return AddState(stateId, onExecute, null, null);
         }
@@ -70,7 +70,7 @@ namespace GloomyStateMachine
         /// <param name="onExecute">Function to call every iteration if this state</param>
         /// <param name="onEnter">Function to execute upon the first iteration of the state</param>
         /// <returns>This state machine</returns>
-        public StateMachine AddState(Enum stateId, Action onExecute, Action onEnter)
+        public StateMachine<T> AddState(T stateId, Action onExecute, Action onEnter)
         {
             return AddState(stateId, onExecute, onEnter, null);
         }
@@ -80,7 +80,7 @@ namespace GloomyStateMachine
         /// </summary>
         /// <param name="stateId"></param>
         /// <returns>True if the key to remove exists</returns>
-        public bool RemoveState(Enum stateId)
+        public bool RemoveState(T stateId)
         {
             return stateActions.Remove(stateId);
         }
@@ -89,11 +89,11 @@ namespace GloomyStateMachine
         /// Change the current state
         /// </summary>
         /// <param name="stateId"></param>
-        public void ChangeState(Enum stateId)
+        public void ChangeState(T stateId)
         {
             AddHistoryEntry(currentStateEntry);
             currentState = stateId;
-            currentStateEntry = new StateHistoryEntry(currentState);
+            currentStateEntry = new StateHistoryEntry<T>(currentState);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace GloomyStateMachine
         /// </summary>
         /// <param name="stateId"></param>
         /// <returns>This state machine</returns>
-        public StateMachine SetState(Enum stateId)
+        public StateMachine<T> SetState(T stateId)
         {
             currentState = stateId;
             return this;
@@ -117,19 +117,19 @@ namespace GloomyStateMachine
             currentStateEntry.Iterate();
         }
 
-        public StateMachine setMaxHistorySize(int maxHistorySize)
+        public StateMachine<T> setMaxHistorySize(int maxHistorySize)
         {
             this.maxHistorySize = maxHistorySize;
             return this;
         }
 
-        public List<StateHistoryEntry> GetStateHistory()
+        public List<StateHistoryEntry<T>> GetStateHistory()
         {
             return machineHistory;
         }
 
         // Add a completed entry to the machine history list
-        void AddHistoryEntry(StateHistoryEntry historyEntry)
+        void AddHistoryEntry(StateHistoryEntry<T> historyEntry)
         {
             machineHistory.Add(historyEntry);
 

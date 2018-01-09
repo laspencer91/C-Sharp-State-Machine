@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace GloomyStateMachine
 {
-    class StateHistoryEntry
+    class StateHistoryEntry<T>
     {
-        Enum state;
+        T state;
         int iterations = 0;
 
-        public StateHistoryEntry(Enum stateId)
+        public StateHistoryEntry(T stateId)
         {
             state = stateId;
         }
@@ -26,7 +26,7 @@ namespace GloomyStateMachine
             return iterations;
         }
 
-        public Enum GetState()
+        public T GetState()
         {
             return state;
         }

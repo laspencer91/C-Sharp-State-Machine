@@ -13,11 +13,11 @@ namespace GloomyStateMachine
             Program prog = new Program();
         }
 
-        StateMachine machine;
+        StateMachine<Enum> machine;
 
         public Program()
         {
-            machine = StateMachine.Create()
+            machine = StateMachine<Enum>.Create()
                 .AddState(StateType.debug_1, debug1, debug1OnEnter)
                 .AddState(StateType.debug_2, debug2);
 
@@ -34,9 +34,9 @@ namespace GloomyStateMachine
 
             machine.ChangeState(StateType.debug_1);
 
-            List<StateHistoryEntry> stateHistory = machine.GetStateHistory();
+            List<StateHistoryEntry<Enum>> stateHistory = machine.GetStateHistory();
 
-            foreach (StateHistoryEntry entry in stateHistory)
+            foreach (StateHistoryEntry<Enum> entry in stateHistory)
                 Console.WriteLine("State: " + entry.GetState() + " played " + entry.GetIterations() + " times.");
         }
 
